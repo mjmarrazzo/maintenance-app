@@ -1,0 +1,37 @@
+package form
+
+import "time"
+
+type DateProps struct {
+	ID         string
+	Label      string
+	Value      time.Time
+	IsRequired bool
+	Hint       string
+}
+
+templ Date(props DateProps) {
+	<div class="form-control w-full">
+		<label class="label" for={ props.ID }>
+			<span class="label-text">
+				{ props.Label }
+				if props.IsRequired {
+					<span class="text-red-500">*</span>
+				}
+			</span>
+		</label>
+		<input
+			type="date"
+			id={ props.ID }
+			name={ props.ID }
+			class="input input-bordered w-full validator"
+			if !props.Value.IsZero() {
+				value={ props.Value.Format("2006-01-02") }
+			}
+			if props.IsRequired {
+				required
+			}
+		/>
+		<p class="validator-hint">{ props.Hint }</p>
+	</div>
+}

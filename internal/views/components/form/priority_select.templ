@@ -1,0 +1,31 @@
+package form
+
+import "github.com/mjmarrazzo/maintenance-app/internal/domain"
+
+var priorities = []domain.Priority{
+	domain.PriorityLow,
+	domain.PriorityMedium,
+	domain.PriorityHigh,
+	domain.PriorityUrgent,
+}
+
+templ PrioritySelect(selected string) {
+	@Select(SelectProps{
+		ID:         "priority",
+		Label:      "Priority",
+		IsRequired: false,
+		Hint:       "Select a priority for the task",
+	}) {
+		<option value="" disabled selected>Select a priority</option>
+		for _, priority := range priorities {
+			<option
+				value={ string(priority) }
+				if selected == string(priority) {
+					selected="true"
+				}
+			>
+				{ string(priority) }
+			</option>
+		}
+	}
+}

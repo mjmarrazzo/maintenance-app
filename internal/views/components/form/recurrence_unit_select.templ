@@ -1,0 +1,30 @@
+package form
+
+import "github.com/mjmarrazzo/maintenance-app/internal/domain"
+
+var recurrenceUnits = []domain.RecurrenceUnit{
+	domain.RecurrenceUnitDay,
+	domain.RecurrenceUnitWeek,
+	domain.RecurrenceUnitMonth,
+	domain.RecurrenceUnitYear,
+}
+
+templ RecurrenceUnitSelect(selected string) {
+	@Select(SelectProps{
+		ID:         "recurrence_unit",
+		Label:      "Recurrence Unit",
+		IsRequired: false,
+	}) {
+		<option value="" disabled selected>Select a recurrence unit</option>
+		for _, recurrenceUnit := range recurrenceUnits {
+			<option
+				value={ string(recurrenceUnit) }
+				if selected == string(recurrenceUnit) {
+					selected="true"
+				}
+			>
+				{ string(recurrenceUnit) }
+			</option>
+		}
+	}
+}

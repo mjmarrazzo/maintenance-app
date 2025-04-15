@@ -1,0 +1,28 @@
+package category_views
+
+import (
+	"github.com/mjmarrazzo/maintenance-app/internal/domain"
+	"strconv"
+)
+
+type SelectProps struct {
+	Categories         []*domain.Category
+	SelectedCategoryID int64
+}
+
+templ Select(props SelectProps) {
+	<select name="category_id" id="category_id" class="select w-full validator">
+		<option value="" disabled selected>Select a category</option>
+		for _, category := range props.Categories {
+			<option
+				value={ strconv.FormatInt(category.ID, 10) }
+				if props.SelectedCategoryID == category.ID {
+					selected="true"
+				}
+			>
+				{ category.Name }
+			</option>
+		}
+		<p class="validator-hint"></p>
+	</select>
+}

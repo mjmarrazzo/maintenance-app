@@ -1,0 +1,34 @@
+package form
+
+import "fmt"
+
+type TextAreaProps struct {
+	ID         string
+	Label      string
+	Value      string
+	Rows       int
+	IsRequired bool
+	Hint       string
+}
+
+templ TextArea(props TextAreaProps) {
+	<div class="form-control w-full">
+		<label class="label" for={ props.ID }>
+			<span class="label-text">
+				{ props.Label }
+				if props.IsRequired {
+					<span class="text-red-500">*</span>
+				}
+			</span>
+		</label>
+		<textarea
+			id="description"
+			name="description"
+			class="textarea textarea-bordered w-full validator"
+			rows={ fmt.Sprintf("%d", props.Rows) }
+		>
+			{ props.Value }
+		</textarea>
+		<p class="validator-hint">{ props.Hint }</p>
+	</div>
+}

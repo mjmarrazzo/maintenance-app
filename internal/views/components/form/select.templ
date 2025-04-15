@@ -1,0 +1,32 @@
+package form
+
+type SelectProps struct {
+	ID         string
+	Label      string
+	IsRequired bool
+	Hint       string
+}
+
+templ Select(props SelectProps) {
+	<div class="form-control w-full">
+		<label class="label" for={ props.ID }>
+			<span class="label-text">
+				{ props.Label }
+				if props.IsRequired {
+					<span class="text-red-500">*</span>
+				}
+			</span>
+		</label>
+		<select
+			id={ props.ID }
+			name={ props.ID }
+			class="select w-full validator"
+			if props.IsRequired {
+				required
+			}
+		>
+			{ children... }
+		</select>
+		<p class="validator-hint">{ props.Hint }</p>
+	</div>
+}

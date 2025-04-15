@@ -1,0 +1,43 @@
+package form
+
+import "strings"
+
+type RemoteSelectProps struct {
+	ID          string
+	Label       string
+	IsRequired  bool
+	Hint        string
+	HxGet       string
+	HxTrigger   string
+	HxIndicator string
+	Value       string
+	ExcludedID  string
+}
+
+templ RemoteSelect(props RemoteSelectProps) {
+	<div class="form-control w-full">
+		<label class="label" for={ props.ID }>
+			<span class="label-text">{ props.Label }</span>
+		</label>
+		<select
+			id={ props.ID }
+			name={ props.ID }
+			class="select w-full validator"
+			if props.IsRequired {
+				required
+			}
+			hx-get={ props.HxGet }
+			hx-target="this"
+			hx-trigger={ props.HxTrigger }
+			hx-indicator={ props.HxIndicator }
+			hx-vals={ `{"excluded_id": "` + props.ExcludedID + `"}` }
+		>
+			if props.Value != "" {
+				<option value={ props.Value } selected>{ props.Value }</option>
+			}
+		</select>
+		<input type="hidden" id="excluded-id-input" name="excluded_id" value={ props.ExcludedID }/>
+		<p class="validator-hint">{ props.Hint }</p>
+		<div class={ strings.TrimPrefix(props.HxIndicator, "."), "htmx-indicator", "skeleton", "h-10" }></div>
+	</div>
+}
