@@ -16,19 +16,12 @@ type AuthContext struct {
 func AuthenticatedMiddleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			_, err := getUserFromSession(c)
+			user, err := getUserFromSession(c)
 			if err != nil {
 				login := auth_views.Login()
 				return api.Render(c, http.StatusOK, login)
 			}
 
-			user := &domain.User{
-				FirstName: "Guest",
-				LastName:  "User",
-				ID:        1,
-				Email:     "example@example.com",
-				Role:      domain.RoleAdmin,
-			}
 			if err := SaveUserToSession(c, user); err != nil {
 				return err
 			}
