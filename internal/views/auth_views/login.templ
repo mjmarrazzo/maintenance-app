@@ -1,0 +1,45 @@
+package auth_views
+
+import "github.com/mjmarrazzo/maintenance-app/internal/views/common"
+
+import "github.com/mjmarrazzo/maintenance-app/internal/views/components/form"
+
+templ Login() {
+	@common.BaseHtml("Login") {
+		<div
+			class="hero min-h-screen"
+			style="background-image: url(/public/illustrations/hero.png);"
+		>
+			<div class="hero-overlay bg-opacity-60"></div>
+			<div class="flex justify-center items-center">
+				<div class="card backdrop-blur-lg bg-white/20 shadow-xl ">
+					<div class="card-body">
+						<h2 class="text-3xl font-bold text-white text-center">Welcome to Groundwork!</h2>
+						<form
+							id="login-form"
+							class="flex flex-col gap-4 p-4"
+							hx-post="/login"
+							hx-indicator="#form-spinner"
+							hx-disabled-elt="button[type=submit]"
+						>
+							@form.Input(form.InputProps{
+								ID:           "email",
+								Label:        "Email",
+								Type:         "email",
+								Hint:         "Enter a valid email address",
+								Autocomplete: form.AutocompleteUsername,
+								IsRequired:   true,
+							})
+							@form.Password(form.PasswordProps{
+								ID:           "password",
+								Label:        "Password",
+								Autocomplete: form.AutocompleteCurrentPassword,
+							})
+							<button class="btn btn-primary btn-block mt-2 shadow-md" type="submit">Login</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+}

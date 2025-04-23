@@ -2,8 +2,11 @@ package main
 
 import (
 	"log"
+	"os"
 
+	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/mjmarrazzo/maintenance-app/internal/api"
@@ -11,15 +14,18 @@ import (
 	"github.com/mjmarrazzo/maintenance-app/internal/handlers"
 )
 
+var store *sessions.CookieStore
+
 func init() {
 	err := godotenv.Load(".env.local")
 	if err != nil {
 		log.Println("Warning: No .env file found")
 	}
+
+	store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
 }
 
 func main() {
-
 	db, err := database.InitPool()
 	if err != nil {
 		panic(err)
@@ -29,6 +35,13 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(api.ErrorMiddleware())
+	e.Use(session.Middleware(store))
+
+	homeHandler := handlers.NewHomeHandler()
+	homeHandler.RegisterRoutes(e)
+
+	authHandler := handlers.NewAuthHandler(db)
+	authHandler.RegisterRoutes(e)
 
 	categoryHandler := handlers.NewCategoryHandler(db)
 	categoryHandler.RegisterRoutes(e)
