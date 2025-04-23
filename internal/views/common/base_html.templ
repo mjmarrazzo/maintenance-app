@@ -1,0 +1,37 @@
+package common
+
+templ BaseHtml(title string) {
+	<!DOCTYPE html>
+	<html class="h-full">
+		<head>
+			<link rel="icon" href="/public/favicon.ico" type="image/x-icon"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>{ title }</title>
+			<script src="/public/htmx.min.js"></script>
+			<link href="/public/tailwind.css" rel="stylesheet"/>
+			<script src="https://unpkg.com/lucide@0.488.0"></script>
+			<style>
+                label:has(+ input:required):after {
+                    content: ' *';
+                    color: red;
+                }
+                label:has(+ * input:required):after {
+                    content: ' *';
+                    color: red;
+                }
+                .htmx-indicator:not(.htmx-request) {
+					display: none;
+				}
+                .hero .card form label {
+                    color: white;
+                }
+			</style>
+		</head>
+		<body class="h-full">
+			{ children... }
+			<script>
+                lucide.createIcons();
+            </script>
+		</body>
+	</html>
+}
