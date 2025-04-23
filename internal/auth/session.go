@@ -115,7 +115,9 @@ func SaveUserToSession(c echo.Context, user *domain.User) error {
 	s.Values["LastName"] = user.LastName
 	s.Values["Email"] = user.Email
 	s.Values["Role"] = string(user.Role)
-	s.Values["ExpiresAt"] = time.Now().Add(time.Hour * 2).Unix()
+
+	expirationTime := time.Now().Add(time.Hour * 2).Unix()
+	s.Values["ExpiresAt"] = strconv.FormatInt(expirationTime, 10)
 
 	return s.Save(c.Request(), c.Response())
 }

@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"log"
 	"net/http"
 	"time"
 
@@ -20,17 +21,17 @@ func AuthenticatedMiddleware() echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			_, err := getUserFromSession(c)
 			if err != nil {
-				return handleUnauthorized(c)
+				return handleUnauthorized(c, err)
 			}
 
 			expiration, err := getExpirationTime(c)
 			if err != nil {
-				return handleUnauthorized(c)
+				return handleUnauthorized(c, err)
 			}
 
 			now := time.Now().Unix()
 			if now > expiration {
-				return handleUnauthorized(c)
+				return handleUnauthorized(c, err)
 			}
 
 			return next(c)
@@ -38,7 +39,8 @@ func AuthenticatedMiddleware() echo.MiddlewareFunc {
 	}
 }
 
-func handleUnauthorized(c echo.Context) error {
+func handleUnauthorized(c echo.Context, err error) error {
+	log.Printf("Unauthorized access: %v\n", err)
 	login := auth_views.Login()
 	return api.Render(c, http.StatusUnauthorized, login)
 }
