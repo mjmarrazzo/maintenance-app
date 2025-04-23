@@ -17,7 +17,7 @@ type TaskHandler interface {
 	GetForm(c echo.Context) error
 	GetEditForm(c echo.Context) error
 	Update(c echo.Context) error
-	// Delete(c echo.Context) error
+	Delete(c echo.Context) error
 	GetSelect(c echo.Context) error
 }
 
@@ -48,11 +48,12 @@ func (h *taskHandler) Create(c echo.Context) error {
 		return err
 	}
 
-	user, err := auth.GetUserFromContext(c)
+	authCtx, err := auth.GetAuthContext(c)
 	if err != nil {
 		return err
 	}
 
+	user := authCtx.User
 	_, err = h.service.Create(c.Request().Context(), user.ID, &taskRequest)
 	if err != nil {
 		return err

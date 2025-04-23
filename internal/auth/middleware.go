@@ -19,18 +19,13 @@ type AuthContext struct {
 func AuthenticatedMiddleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			_, err := getUserFromSession(c)
-			if err != nil {
-				return handleUnauthorized(c, err)
-			}
-
-			expiration, err := getExpirationTime(c)
+			authCtx, err := GetAuthContext(c)
 			if err != nil {
 				return handleUnauthorized(c, err)
 			}
 
 			now := time.Now().Unix()
-			if now > expiration {
+			if now > authCtx.ExpiresAt {
 				return handleUnauthorized(c, err)
 			}
 
@@ -45,10 +40,18 @@ func handleUnauthorized(c echo.Context, err error) error {
 	return api.Render(c, http.StatusUnauthorized, login)
 }
 
-func GetUserFromContext(c echo.Context) (*domain.User, error) {
+func GetAuthContext(c echo.Context) (*AuthContext, error) {
 	user, err := getUserFromSession(c)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	expiration, err := getExpirationTime(c)
+	if err != nil {
+		return nil, err
+	}
+	authContext := &AuthContext{
+		User:      user,
+		ExpiresAt: expiration,
+	}
+	return authContext, nil
 }
