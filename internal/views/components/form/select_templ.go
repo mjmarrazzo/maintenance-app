@@ -98,7 +98,7 @@ func Select(props SelectProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" class=\"select w-full validator\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" class=\"select focus:outline-1 focus:outline-blue-800 w-full validator\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
