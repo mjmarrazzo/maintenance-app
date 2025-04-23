@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/mjmarrazzo/maintenance-app/internal/api"
+	"github.com/mjmarrazzo/maintenance-app/internal/auth"
 	"github.com/mjmarrazzo/maintenance-app/internal/database"
 	"github.com/mjmarrazzo/maintenance-app/internal/domain"
 	"github.com/mjmarrazzo/maintenance-app/internal/service"
@@ -16,7 +17,7 @@ type TaskHandler interface {
 	GetForm(c echo.Context) error
 	GetEditForm(c echo.Context) error
 	Update(c echo.Context) error
-	// Delete(c echo.Context) error
+	Delete(c echo.Context) error
 	GetSelect(c echo.Context) error
 }
 
@@ -25,13 +26,16 @@ type taskHandler struct {
 }
 
 func (c taskHandler) RegisterRoutes(e *echo.Echo) {
-	e.POST("/tasks", c.Create)
-	e.GET("/tasks", c.GetAllTasks)
-	e.GET("/tasks/form", c.GetForm)
-	e.GET("/tasks/:id/form", c.GetEditForm)
-	e.PUT("/tasks/:id", c.Update)
-	// e.DELETE("/tasks/:id", c.Delete)
-	e.GET("/tasks/select", c.GetSelect)
+	group := e.Group("/tasks")
+	group.Use(auth.AuthenticatedMiddleware())
+
+	group.POST("", c.Create)
+	group.GET("", c.GetAllTasks)
+	group.GET("/form", c.GetForm)
+	group.GET("/:id/form", c.GetEditForm)
+	group.PUT("/:id", c.Update)
+	group.DELETE("/:id", c.Delete)
+	group.GET("/select", c.GetSelect)
 }
 
 func NewTaskHandler(db *database.Client) TaskHandler {
@@ -44,12 +48,18 @@ func (h *taskHandler) Create(c echo.Context) error {
 		return err
 	}
 
-	_, err := h.service.Create(c.Request().Context(), &taskRequest)
+	authCtx, err := auth.GetAuthContext(c)
 	if err != nil {
 		return err
 	}
 
-	c.Response().Header().Set("HX-Redirect", "/tasks")
+	user := authCtx.User
+	_, err = h.service.Create(c.Request().Context(), user.ID, &taskRequest)
+	if err != nil {
+		return err
+	}
+
+	c.Response().Header().Set("Hx-Refresh", "true")
 	return c.NoContent(201)
 }
 
@@ -109,8 +119,22 @@ func (h *taskHandler) Update(c echo.Context) error {
 		return err
 	}
 
-	c.Response().Header().Set("HX-Redirect", "/tasks")
+	c.Response().Header().Set("Hx-Refresh", "true")
 	return c.NoContent(200)
+}
+
+func (h *taskHandler) Delete(c echo.Context) error {
+	var params TaskIDParams
+	if err := c.Bind(&params); err != nil {
+		return err
+	}
+
+	if err := h.service.Delete(c.Request().Context(), params.TaskID); err != nil {
+		return err
+	}
+
+	c.Response().Header().Set("Hx-Refresh", "true")
+	return c.NoContent(204)
 }
 
 type TaskSelectIDParams struct {

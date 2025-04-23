@@ -9,11 +9,11 @@ import (
 )
 
 type TaskService interface {
-	Create(ctx context.Context, task *domain.TaskRequest) (*domain.Task, error)
+	Create(ctx context.Context, userId int64, task *domain.TaskRequest) (*domain.Task, error)
 	GetAll(ctx context.Context) ([]*domain.Task, error)
 	GetByID(ctx context.Context, id int64) (*domain.Task, error)
 	Update(ctx context.Context, id int64, task *domain.TaskRequest) (*domain.Task, error)
-	// Delete(ctx context.Context, id int64) error
+	Delete(ctx context.Context, id int64) error
 }
 
 type taskService struct {
@@ -24,8 +24,10 @@ func NewTaskService(pool *pgxpool.Pool) TaskService {
 	return &taskService{repository: repository.NewTaskRepository(pool)}
 }
 
-func (s *taskService) Create(ctx context.Context, tr *domain.TaskRequest) (*domain.Task, error) {
+func (s *taskService) Create(ctx context.Context, userId int64, tr *domain.TaskRequest) (*domain.Task, error) {
 	task := tr.ToDomain()
+	task.CreatedBy = userId
+
 	if err := s.repository.Create(ctx, task); err != nil {
 		return nil, err
 	}
@@ -48,4 +50,11 @@ func (s *taskService) Update(ctx context.Context, id int64, tr *domain.TaskReque
 		return nil, err
 	}
 	return task, nil
+}
+
+func (s *taskService) Delete(ctx context.Context, id int64) error {
+	if err := s.repository.Delete(ctx, id); err != nil {
+		return err
+	}
+	return nil
 }

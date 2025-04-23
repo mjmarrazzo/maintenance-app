@@ -5,66 +5,49 @@ var sidebar_entries = []struct {
 	Icon string
 	Path templ.SafeURL
 }{
-	{"Home", "home", "/"},
+	{"Home", "home", "/home"},
 	{"Tasks", "clipboard-list", "/tasks"},
 	{"Locations", "map-pin", "/locations"},
 	{"Categories", "tag", "/categories"},
 }
 
 templ Page(title string) {
-	<!DOCTYPE html>
-	<html>
-		<head>
-			<link rel="icon" href="/public/favicon.ico" type="image/x-icon"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>{ title }</title>
-			<script src="/public/htmx.min.js"></script>
-			<link href="/public/tailwind.css" rel="stylesheet"/>
-			<script src="https://unpkg.com/lucide@0.488.0"></script>
-			<style>
-				.htmx-indicator:not(.htmx-request) {
-					display: none;
-				}
-			</style>
-		</head>
-		<body class="h-full">
-			<div class="navbar shadow-sm sticky top-0 z-50 bg-base-100 h-16">
-				<div class="flex justify-between md:justify-start w-full items-center px-4">
-					<div class="flex-none md:hidden">
-						<button class="btn btn-square btn-ghost" onclick="toggleSidebar()">
-							<i data-lucide="menu"></i>
-						</button>
-					</div>
-					<div class="flex-1 flex justify-center md:justify-start">
-						<a href="/" class="flex gap-4 flex-row items-center font-sans">
-							<img class="h-8 md:h-8" src="/public/logo.png"/>
-							<span class="text-2xl font-bold text-[#005f6e]">Groundwork</span>
-						</a>
-					</div>
+	@BaseHtml(title) {
+		<div class="navbar shadow-sm sticky top-0 z-50 bg-base-100 h-16">
+			<div class="flex justify-between md:justify-start w-full items-center px-4">
+				<div class="flex-none md:hidden">
+					<button class="btn btn-square btn-ghost" onclick="toggleSidebar()">
+						<i data-lucide="menu"></i>
+					</button>
+				</div>
+				<div class="flex-1 flex justify-center md:justify-start">
+					<a href="/" class="flex gap-4 flex-row items-center font-sans">
+						<img class="h-8 md:h-8" src="/public/logo.png"/>
+						<span class="text-2xl font-bold text-[#005f6e]">Groundwork</span>
+					</a>
 				</div>
 			</div>
-			<div id="sidebar-backdrop" class="fixed inset-0 bg-black opacity-20 z-40 hidden md:hidden" onclick="toggleSidebar()"></div>
-			<div class="flex">
-				<div id="sidebar" class="fixed md:sticky top-16 h-[calc(100dvh-64px)] bg-base-100 w-80 shadow-md overflow-y-auto z-40 -left-80 md:left-0 transition-all duration-300">
-					<ul class="menu p-4 w-full">
-						for _, entry := range sidebar_entries {
-							<li class="[&.active]:font-bold [&.active]:bg-base-300">
-								<a href={ entry.Path } class="flex gap-8 text-2xl w-full">
-									<i data-lucide={ entry.Icon }></i>
-									{ entry.Name }
-								</a>
-							</li>
-						}
-					</ul>
-				</div>
-				<main class="flex-1 h-[calc(100dvh-64px)] overflow-y-auto p-8 w-full">
-					{ children... }
-				</main>
+		</div>
+		<div id="sidebar-backdrop" class="fixed inset-0 bg-black opacity-20 z-40 hidden md:hidden" onclick="toggleSidebar()"></div>
+		<div class="flex">
+			<div id="sidebar" class="fixed md:sticky top-16 h-[calc(100dvh-64px)] bg-base-100 w-80 shadow-md overflow-y-auto z-40 -left-80 md:left-0 transition-all duration-300">
+				<ul class="menu p-4 w-full">
+					for _, entry := range sidebar_entries {
+						<li class="[&.active]:font-bold [&.active]:bg-base-300">
+							<a href={ entry.Path } class="flex gap-8 text-2xl w-full">
+								<i data-lucide={ entry.Icon }></i>
+								{ entry.Name }
+							</a>
+						</li>
+					}
+				</ul>
 			</div>
-			<div id="toast" class="toast"></div>
-			<script>
-				lucide.createIcons();
-
+			<main class="flex-1 h-[calc(100dvh-64px)] overflow-y-auto p-8 w-full">
+				{ children... }
+			</main>
+		</div>
+		<div id="toast" class="toast"></div>
+		<script>
 				function toggleSidebar() {
 					const sidebar = document.getElementById('sidebar');
 					const backdrop = document.getElementById('sidebar-backdrop');
@@ -131,6 +114,5 @@ templ Page(title string) {
 					}
 				});
 			</script>
-		</body>
-	</html>
+	}
 }

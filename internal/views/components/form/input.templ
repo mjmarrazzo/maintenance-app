@@ -1,12 +1,13 @@
 package form
 
 type InputProps struct {
-	ID         string
-	Label      string
-	Value      string
-	Type       string
-	IsRequired bool
-	Hint       string
+	ID           string
+	Label        string
+	Value        string
+	Type         string
+	IsRequired   bool
+	Hint         string
+	Autocomplete autocomplete
 }
 
 templ Input(props InputProps) {
@@ -14,9 +15,6 @@ templ Input(props InputProps) {
 		<label class="label" for={ props.ID }>
 			<span class="label-text">
 				{ props.Label }
-				if props.IsRequired {
-					<span class="text-red-500">*</span>
-				}
 			</span>
 		</label>
 		<input
@@ -24,11 +22,14 @@ templ Input(props InputProps) {
 			id={ props.ID }
 			name={ props.ID }
 			value={ props.Value }
-			class="input input-bordered w-full validator"
+			class="input focus:outline-1 focus:outline-blue-800 w-full validator"
 			if props.IsRequired {
 				required
 			}
+			if props.Autocomplete != "" {
+				autocomplete={ string(props.Autocomplete) }
+			}
 		/>
-		<p class="validator-hint">{ props.Hint }</p>
+		<p class="validator-hint hidden">{ props.Hint }</p>
 	</div>
 }

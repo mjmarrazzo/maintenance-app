@@ -24,7 +24,7 @@ templ Date(props DateProps) {
 			type="date"
 			id={ props.ID }
 			name={ props.ID }
-			class="input input-bordered w-full validator"
+			class="input focus:outline-1 focus:outline-blue-800 w-full validator"
 			if !props.Value.IsZero() {
 				value={ props.Value.Format("2006-01-02") }
 			}
