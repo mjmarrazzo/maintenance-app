@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
@@ -81,6 +82,20 @@ func parseInt(value any) (int64, bool) {
 	return intValue, true
 }
 
+func getExpirationTime(c echo.Context) (int64, error) {
+	s, err := session.Get(string(sessionKey), c)
+	if err != nil {
+		return 0, err
+	}
+
+	expiresAt, ok := parseInt(s.Values["ExpiresAt"])
+	if !ok {
+		return 0, errors.New("expiresAt not found in session")
+	}
+
+	return expiresAt, nil
+}
+
 func SaveUserToSession(c echo.Context, user *domain.User) error {
 	s, err := session.Get(string(sessionKey), c)
 	if err != nil {
@@ -100,6 +115,7 @@ func SaveUserToSession(c echo.Context, user *domain.User) error {
 	s.Values["LastName"] = user.LastName
 	s.Values["Email"] = user.Email
 	s.Values["Role"] = string(user.Role)
+	s.Values["ExpiresAt"] = time.Now().Add(time.Hour * 2).Unix()
 
 	return s.Save(c.Request(), c.Response())
 }
