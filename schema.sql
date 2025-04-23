@@ -1,7 +1,7 @@
 -- Create enums for statuses and priorities
 CREATE TYPE task_priority AS ENUM ('Low', 'Medium', 'High', 'Urgent');
 CREATE TYPE task_status AS ENUM ('New', 'In Progress', 'Completed', 'On Hold');
-CREATE TYPE user_role AS ENUM ('Member', 'Maintenance', 'Administrator');
+CREATE TYPE user_role AS ENUM ('User', 'Administrator');
 CREATE TYPE recurrence_type AS ENUM ('Daily', 'Weekly', 'Monthly', 'Yearly', 'Custom');
 CREATE TYPE recurrence_unit AS ENUM ('Days', 'Weeks', 'Months', 'Years');
 
@@ -23,12 +23,12 @@ CREATE TABLE IF NOT EXISTS locations (
 -- Create Users table
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    role user_role NOT NULL DEFAULT 'Member',
+    role user_role NOT NULL DEFAULT 'User',
     phone VARCHAR(20),
-    notification_preferences JSONB NOT NULL DEFAULT '{}',
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
@@ -212,8 +212,8 @@ ON CONFLICT DO NOTHING;
 
 -- Insert a default admin user with password 'admin' (this is just for initial setup, should be changed)
 -- Note: In production, use a proper password hashing mechanism
-INSERT INTO users (name, email, password_hash, role)
-VALUES ('Admin', 'admin@churchmaintenance.org', '$2a$10$9tWMVVIQAj8SHfDFaRpp4e5AsvSo5dP4OmYjt3HhKkIeJhAYMrE1u', 'Administrator')
+INSERT INTO users (first_name, last_name, email, password_hash, role)
+VALUES ('Admin', 'Admin', 'admin@example.org', '', 'Administrator')
 ON CONFLICT DO NOTHING;
 
 -- Function to calculate next occurrence
