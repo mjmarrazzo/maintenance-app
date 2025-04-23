@@ -39,8 +39,9 @@ func NewAuthHandler(db *database.Client) UserHandler {
 }
 
 type LoginParams struct {
-	Email    string `form:"email" validate:"required,email"`
-	Password string `form:"password" validate:"required"`
+	Email       string `form:"email" validate:"required,email"`
+	Password    string `form:"password" validate:"required"`
+	OriginalUrl string `form:"original_url"`
 }
 
 func (h *userHandler) Login(c echo.Context) error {
@@ -54,7 +55,13 @@ func (h *userHandler) Login(c echo.Context) error {
 		return err
 	}
 	auth.SaveUserToSession(c, user)
-	c.Response().Header().Set("Hx-Redirect", "/home")
+
+	redirectUrl := loginParams.OriginalUrl
+	if redirectUrl == "" {
+		redirectUrl = "/home"
+	}
+
+	c.Response().Header().Set("Hx-Redirect", redirectUrl)
 	return nil
 }
 

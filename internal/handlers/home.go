@@ -27,7 +27,7 @@ func NewHomeHandler() HomeHandler {
 }
 
 func (h *homeHandler) Index(c echo.Context) error {
-	login := auth_views.Login()
+	login := auth_views.Login(auth_views.LoginProps{})
 	return api.Render(c, http.StatusOK, login)
 }
 

@@ -36,7 +36,12 @@ func AuthenticatedMiddleware() echo.MiddlewareFunc {
 
 func handleUnauthorized(c echo.Context, err error) error {
 	log.Printf("Unauthorized access: %v\n", err)
-	login := auth_views.Login()
+
+	originalUrl := c.Request().URL.String()
+	log.Printf("Original URL: %s\n", originalUrl)
+	login := auth_views.Login(auth_views.LoginProps{
+		OriginalUrl: originalUrl,
+	})
 	return api.Render(c, http.StatusUnauthorized, login)
 }
 

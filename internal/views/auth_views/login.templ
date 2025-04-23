@@ -4,7 +4,11 @@ import "github.com/mjmarrazzo/maintenance-app/internal/views/common"
 
 import "github.com/mjmarrazzo/maintenance-app/internal/views/components/form"
 
-templ Login() {
+type LoginProps struct {
+	OriginalUrl string
+}
+
+templ Login(props LoginProps) {
 	@common.BaseHtml("Login") {
 		<div
 			class="hero min-h-screen"
@@ -35,6 +39,7 @@ templ Login() {
 								Label:        "Password",
 								Autocomplete: form.AutocompleteCurrentPassword,
 							})
+							<input type="hidden" name="original_url" value={ props.OriginalUrl }/>
 							<button class="btn btn-primary btn-block mt-2 shadow-md" type="submit">Login</button>
 						</form>
 					</div>
