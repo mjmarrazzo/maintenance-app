@@ -54,9 +54,11 @@ type Task struct {
 	Priority                sql.NullString `db:"priority"`
 	Status                  sql.NullString `db:"status"`
 	CreatedBy               int64          `db:"created_by"`
-	CreatedByName           sql.NullString
+	CreatedByFirstName      sql.NullString
+	CreatedByLastName       sql.NullString
 	AssignedTo              sql.NullInt64 `db:"assigned_to"`
-	AssignedToName          sql.NullString
+	AssignedToFirstName     sql.NullString
+	AssignedToLastName      sql.NullString
 	CreatedAt               time.Time       `db:"created_at"`
 	UpdatedAt               time.Time       `db:"updated_at"`
 	EstimatedCompletionDate sql.NullTime    `db:"estimated_completion_date"`
@@ -170,7 +172,6 @@ func (tr *TaskRequest) ToDomain() *Task {
 		LocationID:              locationID,
 		Priority:                priority,
 		Status:                  status,
-		CreatedBy:               1, //TODO: actually fill this in
 		AssignedTo:              assignedTo,
 		EstimatedCompletionDate: estimatedCompletionDate,
 		Cost:                    cost,

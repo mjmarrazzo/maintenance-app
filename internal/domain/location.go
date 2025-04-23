@@ -15,7 +15,7 @@ type Location struct {
 
 type LocationRequest struct {
 	Name        string `json:"name" form:"name" validate:"required,max=100"`
-	Description string `json:"description" form:"description" validate:"numericstring"`
+	Description string `json:"description" form:"description"`
 	ParentID    string `json:"parent_location_id" form:"parent_location_id"`
 }
 

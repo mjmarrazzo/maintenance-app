@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/mjmarrazzo/maintenance-app/internal/api"
+	"github.com/mjmarrazzo/maintenance-app/internal/auth"
 	"github.com/mjmarrazzo/maintenance-app/internal/database"
 	"github.com/mjmarrazzo/maintenance-app/internal/domain"
 	"github.com/mjmarrazzo/maintenance-app/internal/service"
@@ -25,13 +26,16 @@ type categoryHandler struct {
 }
 
 func (c categoryHandler) RegisterRoutes(e *echo.Echo) {
-	e.POST("/categories", c.Create)
-	e.GET("/categories", c.GetAllCategories)
-	e.GET("/categories/form", c.GetForm)
-	e.GET("/categories/:id/form", c.GetEditForm)
-	e.PUT("/categories/:id", c.Update)
-	e.DELETE("/categories/:id", c.Delete)
-	e.GET("/categories/select", c.GetCategorySelect)
+	group := e.Group("/categories")
+	group.Use(auth.AuthenticatedMiddleware())
+
+	group.POST("", c.Create)
+	group.GET("", c.GetAllCategories)
+	group.GET("/form", c.GetForm)
+	group.GET("/:id/form", c.GetEditForm)
+	group.PUT("/:id", c.Update)
+	group.DELETE("/:id", c.Delete)
+	group.GET("/select", c.GetCategorySelect)
 }
 
 func NewCategoryHandler(db *database.Client) CategoryHandler {
@@ -49,7 +53,7 @@ func (h *categoryHandler) Create(c echo.Context) error {
 		return err
 	}
 
-	c.Response().Header().Set("HX-Redirect", "/categories")
+	c.Response().Header().Set("Hx-Refresh", "true")
 	return c.NoContent(201)
 }
 
@@ -72,7 +76,7 @@ func (h *categoryHandler) GetForm(c echo.Context) error {
 }
 
 type CategoryIDParam struct {
-	ID int64 `param:"category_id" query:"category_id"`
+	ID int64 `param:"id" query:"category_id"`
 }
 
 func (h *categoryHandler) GetEditForm(c echo.Context) error {
@@ -109,7 +113,7 @@ func (h *categoryHandler) Update(c echo.Context) error {
 		return err
 	}
 
-	c.Response().Header().Set("HX-Redirect", "/categories")
+	c.Response().Header().Set("Hx-Refresh", "true")
 	return c.NoContent(204)
 }
 
@@ -123,7 +127,7 @@ func (h *categoryHandler) Delete(c echo.Context) error {
 		return err
 	}
 
-	c.Response().Header().Set("HX-Redirect", "/categories")
+	c.Response().Header().Set("Hx-Refresh", "true")
 	return c.NoContent(204)
 }
 

@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/mjmarrazzo/maintenance-app/internal/api"
+	"github.com/mjmarrazzo/maintenance-app/internal/auth"
 	"github.com/mjmarrazzo/maintenance-app/internal/database"
 	"github.com/mjmarrazzo/maintenance-app/internal/domain"
 	"github.com/mjmarrazzo/maintenance-app/internal/service"
@@ -26,13 +27,16 @@ type locationHandler struct {
 }
 
 func (c locationHandler) RegisterRoutes(e *echo.Echo) {
-	e.POST("/locations", c.Create)
-	e.GET("/locations", c.GetAllLocations)
-	e.GET("/locations/form", c.GetForm)
-	e.GET("/locations/:id/form", c.GetEditForm)
-	e.PUT("/locations/:id", c.Update)
-	e.DELETE("/locations/:id", c.Delete)
-	e.GET("/locations/select", c.GetLocationSelect)
+	group := e.Group("/locations")
+	group.Use(auth.AuthenticatedMiddleware())
+
+	group.POST("", c.Create)
+	group.GET("", c.GetAllLocations)
+	group.GET("/form", c.GetForm)
+	group.GET("/:id/form", c.GetEditForm)
+	group.PUT("/:id", c.Update)
+	group.DELETE("/:id", c.Delete)
+	group.GET("/select", c.GetLocationSelect)
 }
 
 func NewLocationHandler(db *database.Client) LocationHandler {
@@ -50,7 +54,7 @@ func (h *locationHandler) Create(c echo.Context) error {
 		return err
 	}
 
-	c.Response().Header().Set("HX-Redirect", "/locations")
+	c.Response().Header().Set("Hx-Refresh", "true")
 	return c.NoContent(201)
 }
 
@@ -122,7 +126,7 @@ func (h *locationHandler) Update(c echo.Context) error {
 		return err
 	}
 
-	c.Response().Header().Set("HX-Redirect", "/locations")
+	c.Response().Header().Set("Hx-Refresh", "true")
 	return c.NoContent(204)
 }
 
@@ -136,7 +140,7 @@ func (h *locationHandler) Delete(c echo.Context) error {
 		return err
 	}
 
-	c.Response().Header().Set("HX-Redirect", "/locations")
+	c.Response().Header().Set("Hx-Refresh", "true")
 	return c.NoContent(204)
 }
 
