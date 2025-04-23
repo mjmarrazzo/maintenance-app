@@ -43,7 +43,7 @@ func GetValidator() *ValidatorInstance {
 
 func RegisterNumericStringValidator(v *validator.Validate) {
 	numericRegex := regexp.MustCompile(`^-?[0-9]+(\.[0-9]+)?$`)
-	v.RegisterValidation("numericstring", func(fl validator.FieldLevel) bool {
+	err := v.RegisterValidation("numericstring", func(fl validator.FieldLevel) bool {
 		if fl.Field().Kind() != reflect.String {
 			return true
 		}
@@ -83,4 +83,8 @@ func RegisterNumericStringValidator(v *validator.Validate) {
 
 		return false
 	})
+
+	if err != nil {
+		panic(err)
+	}
 }

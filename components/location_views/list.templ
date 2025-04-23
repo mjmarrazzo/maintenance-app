@@ -1,0 +1,98 @@
+package location_views
+
+import (
+	"fmt"
+	"github.com/mjmarrazzo/maintenance-app/components/common"
+	"github.com/mjmarrazzo/maintenance-app/domain"
+)
+
+type ListProps struct {
+	Locations []*domain.Location
+}
+
+templ List(props ListProps) {
+	@common.Page("Locations") {
+		<div class="card card-lg card-border shadow-md mx-auto">
+			<div class="card-body">
+				<div class="card-title justify-between">
+					<h2 class="text-2xl font-bold">Locations</h2>
+					<button
+						class="btn btn-primary self-end"
+						hx-get="/locations/form"
+						hx-target="#location-modal-content"
+						onclick="location_modal.showModal()"
+					>
+						<span class="hidden md:inline">Create Location</span>
+						<i data-lucide="plus" class="md:hidden"></i>
+					</button>
+				</div>
+				<ul class="list">
+					if len(props.Locations) == 0 {
+						@common.NoResults(
+							"Locations",
+							"No locations found.",
+							"Create a new location to get started.",
+						)
+					}
+					for i, location := range props.Locations {
+						<li
+							class="list-row animate-slide-in"
+							style={ getListStyle(i) }
+						>
+							<div class="list-col-grow">
+								<div class="text-lg font-bold">
+									{ location.Name }
+									if location.ParentLocationName.Valid {
+										<div class="badge badge-primary">
+											{ location.ParentLocationName.String }
+										</div>
+									}
+								</div>
+								<div class="opacity-60">
+									{ location.Description }
+								</div>
+							</div>
+							<button
+								class="btn btn-square btn-ghost"
+								hx-get={ fmt.Sprintf("/locations/%d/form", location.ID) }
+								hx-target="#location-modal-content"
+								hx-on::after-request="
+									if(event.detail.failed){
+										showToast('Failed to load form', 'error');
+										location_modal.close();
+									}
+								"
+								onclick="location_modal.showModal()"
+							>
+								<i data-lucide="pencil"></i>
+							</button>
+							<button
+								class="btn btn-square btn-ghost"
+								hx-delete={ fmt.Sprintf("/locations/%d", location.ID) }
+								hx-on::after-request="
+									if(event.detail.failed){
+										showToast('Failed to delete location', 'error');
+									}
+								"
+								hx-confirm={ fmt.Sprintf("Are you sure you want to delete the '%s' location and its sublocations?", location.Name) }
+							>
+								<i data-lucide="trash-2" class="text-red-500"></i>
+							</button>
+						</li>
+					}
+				</ul>
+			</div>
+		</div>
+		@common.Dialog(common.DialogProps{
+			ID:        "location_modal",
+			ContentID: "location-modal-content",
+		})
+	}
+}
+
+func getListStyle(i int) map[string]string {
+	return map[string]string{
+		"animation-delay":     fmt.Sprintf("%dms", i*100),
+		"animation-fill-mode": "forwards",
+	}
+}

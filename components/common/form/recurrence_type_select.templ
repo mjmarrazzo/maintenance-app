@@ -1,0 +1,31 @@
+package form
+
+import "github.com/mjmarrazzo/maintenance-app/domain"
+
+var recurrenceTypes = []domain.RecurrenceType{
+	domain.RecurrenceTypeDaily,
+	domain.RecurrenceTypeWeekly,
+	domain.RecurrenceTypeMonthly,
+	domain.RecurrenceTypeYearly,
+	domain.RecurrentTypeCustom,
+}
+
+templ RecurrenceTypeSelect(selected string) {
+	@Select(SelectProps{
+		ID:         "recurrence_type",
+		Label:      "Recurrence Type",
+		IsRequired: false,
+	}) {
+		<option value="" disabled selected>Select a recurrence type</option>
+		for _, recurrenceType := range recurrenceTypes {
+			<option
+				value={ string(recurrenceType) }
+				if selected == string(recurrenceType) {
+					selected="true"
+				}
+			>
+				{ string(recurrenceType) }
+			</option>
+		}
+	}
+}

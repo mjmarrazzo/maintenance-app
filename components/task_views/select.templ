@@ -1,0 +1,31 @@
+package task_views
+
+import (
+	"github.com/mjmarrazzo/maintenance-app/domain"
+	"strconv"
+)
+
+type SelectProps struct {
+	Tasks          []*domain.Task
+	SelectedTaskID int64
+	ExcludedID     int64
+}
+
+templ Select(props SelectProps) {
+	<select name="task_id" id="task_id" class="select w-full validator">
+		<option value="" disabled selected>Select a task</option>
+		for _, task := range props.Tasks {
+			if task.ID != props.ExcludedID {
+				<option
+					value={ strconv.FormatInt(task.ID, 10) }
+					if props.SelectedTaskID == task.ID {
+						selected="true"
+					}
+				>
+					{ task.Title }
+				</option>
+			}
+		}
+		<p class="validator-hint"></p>
+	</select>
+}

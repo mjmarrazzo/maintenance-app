@@ -1,0 +1,30 @@
+package form
+
+import "github.com/mjmarrazzo/maintenance-app/domain"
+
+var statuses = []domain.Status{
+	domain.StatusNew,
+	domain.StatusInProgress,
+	domain.StatusCompleted,
+	domain.StatusOnHold,
+}
+
+templ StatusSelect(selected string) {
+	@Select(SelectProps{
+		ID:         "status",
+		Label:      "Status",
+		IsRequired: false,
+	}) {
+		<option value="" disabled selected>Select a status</option>
+		for _, status := range statuses {
+			<option
+				value={ string(status) }
+				if selected == string(status) {
+					selected="true"
+				}
+			>
+				{ string(status) }
+			</option>
+		}
+	}
+}
